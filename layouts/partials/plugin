@@ -1,0 +1,22 @@
+{{- $plugin := dict -}}
+{{- with index $.Root.Site.Data.plugins $.Name  -}}
+    {{- $head := .partials.head -}}
+    {{- $foot := .partials.foot -}}
+    {{- $sidebar := .partials.sidebar -}}
+    {{- $footer := .partials.footer -}}
+    {{- $comments := .partials.comments -}}
+    {{- $partials := dict "Head" $head "Foot" $foot "Footer" $footer "Sidebar" $sidebar "Comments" $comments -}}
+    
+    {{- $csp_fonts := .partials.csp.fonts -}}
+    {{- $csp_script := .partials.csp.script -}}
+    {{- $csp_style := .partials.csp.style -}}
+    {{- $csp := dict "Fonts" $csp_fonts "Script" $csp_script "Style" $csp_style -}}
+
+    {{- $defaults := dict -}}
+    {{- $conf := merge $defaults (index $.Root.Params .config_label | default dict) -}}
+    
+    {{- $plugin = dict "Partials" $partials "Config" $conf "Csp" $csp "Shortcodes" .shortcodes -}}
+{{- else -}}
+    {{- errorf "could not find plugin \"%s\"" $.Name -}}
+{{- end -}}
+{{- return $plugin -}}
