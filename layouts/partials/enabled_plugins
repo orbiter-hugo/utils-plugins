@@ -1,0 +1,59 @@
+{{- $scope := $.Scope | default "site" | lower -}}
+{{- if not (in (slice "site" "page") $scope) -}}
+    {{- errorf "invalid plugin scope \"%s\": valid values are \"site\" and \"page\"" $.Scope -}}
+{{- end -}}
+
+{{- $plugins := slice -}}
+{{- $names := slice -}}
+
+{{- /* Generic plugins */ -}}
+{{- with $.Root.Site.Params.plugins -}}
+    {{- $names = . -}}
+{{- end -}}
+
+{{- /* Sidebar plugins */ -}}
+{{- with $.Root.Site.Params.sidebar.order -}}
+    {{- $names = union $names . -}}
+{{- end -}}
+
+{{- /* Footer plugins */ -}}
+{{- with $.Root.Site.Params.footer.left -}}
+    {{- $names = union $names . -}}
+{{- end -}}
+{{- with $.Root.Site.Params.footer.center -}}
+    {{- $names = union $names . -}}
+{{- end -}}
+{{- with $.Root.Site.Params.footer.right -}}
+    {{- $names = union $names . -}}
+{{- end -}}
+
+{{- /* Shortcode plugins */ -}}
+{{- range $name, $unused := $.Root.Site.Data.plugins -}}
+    {{- $plugin := partialCached "plugin" (dict "Root" $.Root "Name" $name) $name -}}
+    {{- $has_plugin := false -}}
+    {{- range $shortcode := $plugin.Shortcodes -}}
+        {{- if eq $scope "site" -}}
+            {{- if not $has_plugin -}}
+                {{- range $page := $.Root.Site.Pages -}}
+                    {{- if and (not $has_plugin) ($page.HasShortcode $shortcode) -}}
+                        {{- $has_plugin = true -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- else -}}
+            {{- if and (not $has_plugin) ($.Root.HasShortcode $shortcode) -}}
+                {{- $has_plugin = true -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    {{- if and $has_plugin (not (in $names $name)) -}}
+        {{- $names = $names | append $name -}}
+    {{- end -}}
+{{- end -}}
+
+{{- range $name := $names -}}
+    {{- $plugin := partialCached "plugin" (dict "Root" $.Root "Name" $name) $name -}}
+    {{- $plugins = $plugins | append $plugin -}}
+{{- end -}}
+
+{{- return $plugins -}}

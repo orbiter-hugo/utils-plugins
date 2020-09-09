@@ -12,11 +12,12 @@
     {{- $csp_style := .partials.csp.style -}}
     {{- $csp := dict "Fonts" $csp_fonts "Script" $csp_script "Style" $csp_style -}}
 
-    {{- $defaults := dict -}}
-    {{- $conf := merge $defaults (index $.Root.Params .config_label | default dict) -}}
+    {{- $fonts := .fonts | default slice -}}
+    {{- $defaults := .defaults | default dict -}}
+    {{- $conf := merge $defaults (index $.Root.Site.Params .config_label | default dict) -}}
     
-    {{- $plugin = dict "Partials" $partials "Config" $conf "Csp" $csp "Shortcodes" .shortcodes -}}
+    {{- $plugin = dict "Partials" $partials "Fonts" $fonts "Config" $conf "Csp" $csp "Shortcodes" .shortcodes "Name" $.Name -}}
 {{- else -}}
-    {{- errorf "could not find plugin \"%s\"" $.Name -}}
+    {{- errorf "could not find plugin \"%s\": %#v" $.Name $.Root.Site.Data.plugins -}}
 {{- end -}}
 {{- return $plugin -}}
