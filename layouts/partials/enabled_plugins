@@ -3,6 +3,7 @@
     {{- errorf "invalid plugin scope \"%s\": valid values are \"site\" and \"page\"" $.Scope -}}
 {{- end -}}
 
+{{- $allplugins := partialCached "all_plugins" $.Root -}}
 {{- $plugins := slice -}}
 {{- $names := slice -}}
 
@@ -14,6 +15,28 @@
 {{- /* Sidebar plugins */ -}}
 {{- with $.Root.Site.Params.sidebar.order -}}
     {{- $names = union $names . -}}
+{{- end -}}
+
+{{- /* Font plugins */ -}}
+{{- $fonts := $.Root.Site.Data.theme.fonts | default dict -}}
+{{- $types := slice "cursive" "emoji" "sans-serif" "serif" -}}
+{{- $typeMap := dict "cursive" "Cursive" "emoji" "Emoji" "sans-serif" "SansSerif" "serif" "Serif" -}}
+{{- range $style := $types -}}
+    {{- $prop := index $typeMap $style -}}
+    {{- with index $fonts $style -}}
+        {{- $font := . -}}
+        {{- $plug := "" -}}
+        {{- range $loopplug := $allplugins -}}
+            {{- if and (not $plug) (in (index $loopplug.Fonts $prop) $font) -}}
+                {{- $plug = $loopplug.Name -}}
+            {{- end -}}
+        {{- end -}}
+        {{- if and (not $plug) (not (in $types .)) -}}
+            {{- errorf "no plugin provides the font \"%s\"" . -}}
+        {{- else if not (in $names $plug) -}}
+            {{- $names = $names | append $plug -}}
+        {{- end -}}
+    {{- end -}}
 {{- end -}}
 
 {{- /* Footer plugins */ -}}

@@ -1,0 +1,42 @@
+{{- $fonts := dict "Cursive" (slice) "Emoji" (slice) "Fantasy" (slice) "Math" (slice) "Monospace" (slice) "SansSerif" (slice) "Serif" (slice) -}}
+{{- if $.fonts -}}
+    {{- $fonts = .fonts -}}
+    {{- $cursive := slice -}}
+    {{- $emoji := slice -}}
+    {{- $fantasy := slice -}}
+    {{- $math := slice -}}
+    {{- $monospace := slice -}}
+    {{- $sansserif := slice -}}
+    {{- $serif := slice -}}
+
+    {{- with index $fonts "cursive" -}}
+        {{- $cursive = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "emoji" -}}
+        {{- $emoji = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "fantasy" -}}
+        {{- $fantasy = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "math" -}}
+        {{- $math = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "monospace" -}}
+        {{- $monospace = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "sans-serif" -}}
+        {{- $sansserif = . -}}
+    {{- end -}}
+
+    {{- with index $fonts "serif" -}}
+        {{- $serif = . -}}
+    {{- end -}}
+
+    {{- $fonts = dict "Cursive" $cursive "Emoji" $emoji "Fantasy" $fantasy "Math" $math "Monospace" $monospace "SansSerif" $sansserif "Serif" $serif -}}
+{{- end -}}
+{{- return $fonts -}}

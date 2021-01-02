@@ -1,0 +1,7 @@
+{{- $server := dict -}}
+{{- if $.server -}}
+    {{- $csp := partialCached "_internal/csp" $ $ -}}
+    {{- $push := $.server.push -}}
+    {{- $server := dict "CSP" $csp "Push" $push -}}
+{{- end -}}
+{{- return $server -}}

@@ -1,0 +1,24 @@
+{{- range $label := slice "connect" "fonts" "frames" "images" "script" "style" -}}
+    {{- if $.partials.server.csp -}}
+        {{- with index $.partials.server.csp $label -}}
+            {{- if or (reflect.IsMap .) (reflect.IsSlice .) -}}
+                {{- errorf "CSP property %s must be a path to a partial" $label -}}
+            {{- else -}}
+                {{- with string . | printf "partials/%s" -}}
+                    {{- if not (templates.Exists .) -}}
+                        {{- errorf "could not find CSP %s partial %s" $label . -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $connect := $.partials.server.csp.connect -}}
+{{- $fonts := $.partials.server.csp.fonts -}}
+{{- $frames := $.partials.server.csp.frames -}}
+{{- $images := $.partials.server.csp.images -}}
+{{- $script := $.partials.server.csp.script -}}
+{{- $style := $.partials.server.csp.style -}}
+{{- $csp := dict "Connect" $connect "Fonts" $fonts "Frames" $frames "Images" $images "Script" $script "Style" $style -}}
+{{- return $csp -}}

@@ -1,0 +1,25 @@
+{{- $valid_partials := slice "head" "foot" "footer" "menu" "pre-content" "post-content" "sidebar" -}}
+
+{{- $partials := dict -}}
+{{- if $.Config.partials -}}
+    {{- /* Check for invalid keys */ -}}
+    {{- range $key, $value := $.Config.partials -}}
+        {{- if not (in $valid_partials $key) -}}
+            {{- errorf "invalid partial type \"%s\" in plugin \"%s\" -- valid options are [%s]" $key $.Name (delimit $valid_partials ", ") -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{- $scr := newScratch -}}
+    {{- range $i, $label := $valid_partials -}}
+        {{- $key := partialCached "strings/PascalCase" $label $label -}}
+        {{- warnf "looking for partial key %s in %#v" $label $.Config.partials -}}
+        {{- with index $.Config.partials $label -}}
+            {{- $val := . -}}
+            {{- warnf "found value for %s: %#v" $label $val -}}
+            {{- $scr.Set $key $val -}}
+        {{- end -}}
+    {{- end -}}
+    {{- warnf "Scratch: %#v" $scr.Values -}}
+    {{- $partials = $scr.Values -}}
+{{- end -}}
+{{- return $partials -}}

@@ -1,0 +1,6 @@
+{{- $plugins := slice -}}
+{{- $root := $ -}}
+{{- range $name, $ignore := $.Site.Data.plugins -}}
+    {{- $plugins = $plugins | append (partialCached "plugin" (dict "Root" $root "Name" $name) $name) -}}
+{{- end -}}
+{{- return $plugins -}}
