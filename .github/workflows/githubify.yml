@@ -1,0 +1,24 @@
+name: GitHub-ify
+on: push
+jobs:
+    githubify:
+        name: "GitHub-ify"
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout code
+              uses: actions/checkout@v2
+              with:
+                persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+                fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+            - name: Replace git.shadow53.com with github.com
+              run: find . -type f -exec sed -i'' -e 's|git.shadow53.com/orbiter-hugo|github.com/orbiter-hugo|g' "{}" \;
+            - name: Commit files
+              run: |
+                git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                git config --local user.name "github-actions[bot]"
+                git commit -m "Replace git URLs with GitHub" -a
+            - name: Push changes
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                branch: ${{ github.ref }}
