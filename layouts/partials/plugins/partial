@@ -1,0 +1,14 @@
+{{- $plugin := $.Plugin -}}
+{{- $partial := $.Partial -}}
+{{- $args := $.Args -}}
+{{- $cache := $.Cache | default false -}}
+
+{{- $partial = printf "plugins/%s/%s" $plugin.Name $partial -}}
+
+{{- if eq $cache true -}}
+    {{- partialCached $partial $args -}}
+{{- else if eq $cache false -}}
+    {{- partial $partial $args -}}
+{{- else -}}
+    {{- partialCached $partial $args $cache -}}
+{{- end -}}

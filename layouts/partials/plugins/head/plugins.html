@@ -1,0 +1,6 @@
+{{- $plugins := partialCached "plugins/enabled_plugins" (dict "Root" $ "Scope" "page") $ -}}
+{{ range $plugin := $plugins -}}
+    {{- with $plugin.Partials.Head -}}
+        {{ partial . (dict "Root" $ "Plugin" $plugin "Config" $plugin.Config) }}
+    {{- end -}}
+{{- end }}

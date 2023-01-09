@@ -13,9 +13,9 @@
     {{- $scr := newScratch -}}
     {{- range $i, $label := $valid_partials -}}
         {{- $key := partialCached "strings/PascalCase" $label $label -}}
-        {{- with index $.Config.partials $label -}}
-            {{- $val := . -}}
-            {{- $scr.Set $key $val -}}
+        {{- $partial_path := printf "plugins/%s/%s.html" $.Name $label -}}
+        {{- if templates.Exists (printf "partials/%s" $partial_path) -}}
+            {{- $scr.Set $key $partial_path -}}
         {{- end -}}
     {{- end -}}
     {{- $partials = $scr.Values -}}

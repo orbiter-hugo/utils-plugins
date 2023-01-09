@@ -3,7 +3,7 @@
     {{- errorf "invalid plugin scope \"%s\": valid values are \"site\" and \"page\"" $.Scope -}}
 {{- end -}}
 
-{{- $allplugins := partialCached "all_plugins" $.Root -}}
+{{- $allplugins := partialCached "plugins/all_plugins" $.Root -}}
 {{- $plugins := slice -}}
 {{- $names := slice -}}
 
@@ -75,7 +75,7 @@
 {{- end -}}
 
 {{- range $name := $names -}}
-    {{- $plugin := partialCached "plugin" (dict "Root" $.Root "Name" $name) $name -}}
+    {{- $plugin := partialCached "plugins/plugin" (dict "Root" $.Root "Name" $name) $name -}}
     {{- $plugins = $plugins | append $plugin -}}
 {{- end -}}
 
