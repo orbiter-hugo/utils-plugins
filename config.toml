@@ -1,6 +1,6 @@
 [module]
     [[module.imports]]
-        path = "git.shadow53.com/orbiter-hugo/utils-strings"
+        path = "git.sr.ht/~shadow53/utils-misc"
     [[modules.mounts]]
         source = "layouts"
         target = "layouts"
