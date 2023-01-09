@@ -25,10 +25,12 @@ The returned object has the following structure (as pseudo-Go code):
         Style: string
     },
     Partials {
-        Comments: string,
         Head: string,
         Foot: string,
         Footer: string,
+        Menu: string,
+        PreContent: string,
+        PostContent: string,
         Sidebar: string,
     }
 }
@@ -74,6 +76,11 @@ The returned object has the following structure (as pseudo-Go code):
   Loads `$.Partials.Foot` for every plugin on the current page. Should be included once at the end
   of `<body>`.
 
+### Partials Discovery
+
+All plugin partials are expected to be at `layouts/partials/plugins/<plugin>/<name>.html`, where `<plugin>` is the plugin's unique id
+and `<name>` is the lower-snake-cased partial type: e.g. `pre-content` for the `PreContent` partial.
+
 ## Developing Plugins
 
 All plugins are [Hugo modules](https://gohugo.io/hugo-modules/), a concept that should be understood
@@ -90,16 +97,6 @@ include some of the following content, including at least one partial (example u
 config_label = ""
 fonts = []
 shortcodes = []
-[partials]
-    comments = ""
-    head = ""
-    foot = ""
-    footer = ""
-    sidebar = ""
-[partials.csp]
-    fonts = ""
-    script = ""
-    style = ""
 [defaults]
     # Defaults go here
 ```
@@ -134,6 +131,9 @@ main concern is that files do not unintentionally clash with those provided by o
   - `css/`
     - `foo/`
       - CSS files here
+  - `images/`
+    - `foo/`
+      - Images used by the plugin
   - `js/`
     - `foo/`
       - JavaScript files here
@@ -148,9 +148,6 @@ main concern is that files do not unintentionally clash with those provided by o
   - `fonts/`
     - Folder as font name in kebab-case
       - Font files
-  - `images/`
-    - `foo/`
-      - Images used by the plugin
 
 (Fonts are not namespaced by plugin name in this example because the font name is considered its
 own namespace)
@@ -164,7 +161,7 @@ is the root context provided to the top-level template and `$plugin` is the valu
 call to the `plugin` partial, any given partial (in this example, the `head` one) will be called:
 
 ```
-{{ partial $plugin.Partials.Head (dict "Root" $root "Config" $plugin.Config) }}
+{{ partial $plugin.Partials.Head (dict "Root" $root "Plugin" $plugin "Config" $plugin.Config) }}
 ```
 
 Any site variables normally accessed through `$.Site` can instead be accessed through `$.Root.Site`.
